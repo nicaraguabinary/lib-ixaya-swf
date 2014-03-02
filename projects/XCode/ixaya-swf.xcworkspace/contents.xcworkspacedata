@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:ixaya-swf/ixaya-swf.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ixaya-swf-demos/ixaya-swf-demos.xcodeproj">
+   </FileRef>
+</Workspace>
