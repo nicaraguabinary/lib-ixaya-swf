@@ -5,10 +5,13 @@
 //  Created by Marcos Ortega on 24/02/14.
 //  Copyright (c) 2014 NIBSA. All rights reserved.
 //
-// This entire notice must be retained in this source code.
-// This source code is under LGLP v2.1 Licence.
-// This software is provided "as is", with no warranty.
-// Latest fixes enhancements and documentation at https://github.com/nicaraguabinary/ixaya-swf
+//  This entire notice must be retained in this source code.
+//  This source code is under LGLP v2.1 Licence.
+//
+//  This software is provided "as is", with absolutely no warranty expressed
+//  or implied. Any use is at your own risk.
+//
+//  Latest fixes enhancements and documentation at https://github.com/nicaraguabinary/ixaya-swf
 //
 
 #ifndef ixaya_ixaya_swf_h

@@ -42,10 +42,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2C82A71318C29F0600DB9D37 /* demoReadSwfMain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = demoReadSwfMain.c; path = ../../../src/c/demoReadSwfMain.c; sourceTree = SOURCE_ROOT; };
-		2C82A71518C29F1C00DB9D37 /* testMemLeakMain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testMemLeakMain.c; path = ../../../src/c/testMemLeakMain.c; sourceTree = SOURCE_ROOT; };
-		2C82A71618C29F1C00DB9D37 /* testMemMap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testMemMap.c; path = ../../../src/c/testMemMap.c; sourceTree = SOURCE_ROOT; };
-		2C82A71718C29F1C00DB9D37 /* testMemMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testMemMap.h; path = ../../../src/c/testMemMap.h; sourceTree = SOURCE_ROOT; };
+		2C82A71318C29F0600DB9D37 /* demoReadSwfMain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = demoReadSwfMain.c; path = ../../../src/c/demos/demoReadSwfMain.c; sourceTree = SOURCE_ROOT; };
+		2C82A71518C29F1C00DB9D37 /* testMemLeakMain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testMemLeakMain.c; path = ../../../src/c/tests/testMemLeakMain.c; sourceTree = SOURCE_ROOT; };
+		2C82A71618C29F1C00DB9D37 /* testMemMap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = testMemMap.c; path = ../../../src/c/tests/testMemMap.c; sourceTree = SOURCE_ROOT; };
+		2C82A71718C29F1C00DB9D37 /* testMemMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testMemMap.h; path = ../../../src/c/tests/testMemMap.h; sourceTree = SOURCE_ROOT; };
 		2C82A71E18C29F6100DB9D37 /* ixaTestMem */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ixaTestMem; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C82A72B18C29F7800DB9D37 /* ixaReadSwf */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ixaReadSwf; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CAE14FD18BC0D21009C2FC4 /* easyzlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = easyzlib.c; path = ../../../src/c/easyzlib.c; sourceTree = SOURCE_ROOT; };
@@ -72,13 +72,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2C146E2B18BECB8C003A2C84 /* ixaya-swf */ = {
+		2C146E2B18BECB8C003A2C84 /* lib-ixaya-swf */ = {
 			isa = PBXGroup;
 			children = (
 				2CAE150018BC0D35009C2FC4 /* ixaya-swf.c */,
 				2CAE150118BC0D35009C2FC4 /* ixaya-swf.h */,
 			);
-			name = "ixaya-swf";
+			name = "lib-ixaya-swf";
 			sourceTree = "<group>";
 		};
 		2C146E2C18BECBA1003A2C84 /* tools */ = {
@@ -111,7 +111,7 @@
 		2CAE14E818BC0CC8009C2FC4 = {
 			isa = PBXGroup;
 			children = (
-				2CAE14F318BC0CC8009C2FC4 /* ixaya-swf-demos */,
+				2CAE14F318BC0CC8009C2FC4 /* lib-ixaya-swf-demos */,
 				2CAE14F218BC0CC8009C2FC4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,15 +125,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2CAE14F318BC0CC8009C2FC4 /* ixaya-swf-demos */ = {
+		2CAE14F318BC0CC8009C2FC4 /* lib-ixaya-swf-demos */ = {
 			isa = PBXGroup;
 			children = (
 				2C146E2C18BECBA1003A2C84 /* tools */,
-				2C146E2B18BECB8C003A2C84 /* ixaya-swf */,
+				2C146E2B18BECB8C003A2C84 /* lib-ixaya-swf */,
 				2C82A71218C29EED00DB9D37 /* demos */,
 				2C82A71118C29EE700DB9D37 /* tests */,
 			);
-			path = "ixaya-swf-demos";
+			path = "lib-ixaya-swf-demos";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,7 +182,7 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = NIBSA;
 			};
-			buildConfigurationList = 2CAE14EC18BC0CC8009C2FC4 /* Build configuration list for PBXProject "ixaya-swf-demos" */;
+			buildConfigurationList = 2CAE14EC18BC0CC8009C2FC4 /* Build configuration list for PBXProject "lib-ixaya-swf-demos" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -343,6 +343,7 @@
 				2C82A72618C29F6200DB9D37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2C82A73118C29F7800DB9D37 /* Build configuration list for PBXNativeTarget "ixaReadSwf" */ = {
 			isa = XCConfigurationList;
@@ -351,8 +352,9 @@
 				2C82A73318C29F7800DB9D37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
-		2CAE14EC18BC0CC8009C2FC4 /* Build configuration list for PBXProject "ixaya-swf-demos" */ = {
+		2CAE14EC18BC0CC8009C2FC4 /* Build configuration list for PBXProject "lib-ixaya-swf-demos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2CAE14F818BC0CC8009C2FC4 /* Debug */,

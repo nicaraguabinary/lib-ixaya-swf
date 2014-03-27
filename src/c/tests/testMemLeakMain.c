@@ -28,9 +28,9 @@ STNB_MemMap memmap;
 		nbMemmapUnregister(&memmap, POINTER); \
 	}
 #include "ixaya-swf.h"
-#include "ixaya-swf.c"
+#include "../ixaya-swf.c"
 //In this demo, we include then "source" file to implement customized memory allocation.
-//As you can see, the "ixaya-swf.c" file is not part of the project tree.
+//The "ixaya-swf.c" file is not part of the project tree.
 
 IxaBOOL uncompressSwfZlib(IxaUI8* ptrDest, const IxaUI32 destLen, const IxaUI8* ptrSrc, const IxaUI32 srcLen);
 

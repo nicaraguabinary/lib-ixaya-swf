@@ -5,10 +5,13 @@
 //  Created by Marcos Ortega on 24/02/14.
 //  Copyright (c) 2014 NIBSA. All rights reserved.
 //
-// This entire notice must be retained in this source code.
-// This source code is under LGLP v2.1 Licence.
-// This software is provided "as is", with no warranty.
-// Latest fixes enhancements and documentation at https://github.com/nicaraguabinary/ixaya-swf
+//  This entire notice must be retained in this source code.
+//  This source code is under LGLP v2.1 Licence.
+//
+//  This software is provided "as is", with absolutely no warranty expressed
+//  or implied. Any use is at your own risk.
+//
+//  Latest fixes enhancements and documentation at https://github.com/nicaraguabinary/ixaya-swf
 //
 
 #include <stdio.h>		//NULL
@@ -16,18 +19,19 @@
 #include <assert.h>		//assert
 #include "ixaya-swf.h"
 
-// You can custom the memory management
-// by defining this MACROS before
-// "ixaya-swf.c" get included or compiled.
-// This are the default memory management params:
+//
+// You can custom memory management by defining this MACROS
+// and CONSTANTS before this file get included or compiled.
+//
+// This are the default memory management MACROS and CONSTANTS:
 #if !defined(IXA_MALLOC) || !defined(IXA_FREE)
 	#include <stdlib.h>		//malloc, free
-#endif
-#ifndef IXA_MALLOC
-	#define IXA_MALLOC(POINTER_DEST, POINTER_TYPE, SIZE_BYTES, STR_HINT)	POINTER_DEST = (POINTER_TYPE*)malloc(SIZE_BYTES);
-#endif
-#ifndef IXA_FREE
-	#define IXA_FREE(POINTER)		 free(POINTER);
+	#ifndef IXA_MALLOC
+		#define IXA_MALLOC(POINTER_DEST, POINTER_TYPE, SIZE_BYTES, STR_HINT)	POINTER_DEST = (POINTER_TYPE*)malloc(SIZE_BYTES);
+	#endif
+	#ifndef IXA_FREE
+		#define IXA_FREE(POINTER)		 free(POINTER);
+	#endif
 #endif
 #ifndef IXA_FIGURE_VERTEXS_SIZE_GROWTH
 	#define IXA_FIGURE_VERTEXS_SIZE_GROWTH		1
@@ -58,19 +62,16 @@
 	#include <android/log.h>
 	//#pragma message("COMPILANDO PARA ANDROID")
 	//Requiere #include <android/log.h> (en el encabezado precompilado)
-	#define PRINTF(STR_FMT, ...)			__android_log_print(ANDROID_LOG_INFO, "Ixaya-swf", STR_FMT, ##__VA_ARGS__)
 	#define PRINTF_INFO(STR_FMT, ...)		__android_log_print(ANDROID_LOG_INFO, "Ixaya-swf", STR_FMT, ##__VA_ARGS__)
 	#define PRINTF_ERROR(STR_FMT, ...)		__android_log_print(ANDROID_LOG_ERROR, "Ixaya-swf", "ERROR, "STR_FMT, ##__VA_ARGS__)
 	#define PRINTF_WARNING(STR_FMT, ...)	__android_log_print(ANDROID_LOG_WARN, "Ixaya-swf", "WARNING, "STR_FMT, ##__VA_ARGS__)
 #elif defined(__APPLE__) || (defined(__APPLE__) && defined(__MACH__))
 	//#pragma message("COMPILANDO PARA iOS/Mac")
-	#define PRINTF(STR_FMT, ...)			printf(STR_FMT, ##__VA_ARGS__)
 	#define PRINTF_INFO(STR_FMT, ...)		printf("Ixa, " STR_FMT, ##__VA_ARGS__)
 	#define PRINTF_ERROR(STR_FMT, ...)		printf("Ixa ERROR, " STR_FMT, ##__VA_ARGS__)
 	#define PRINTF_WARNING(STR_FMT, ...)	printf("Ixa WARNING, " STR_FMT, ##__VA_ARGS__)
 #else
 	//#pragma message("(SE ASUME) COMPILANDO PARA BLACKBERRY")
-	#define PRINTF(STR_FMT, ...)			fprintf(stdout, STR_FMT, ##__VA_ARGS__); fflush(stdout)
 	#define PRINTF_INFO(STR_FMT, ...)		fprintf(stdout, "Ixa, " STR_FMT, ##__VA_ARGS__); fflush(stdout)
 	#define PRINTF_ERROR(STR_FMT, ...)		fprintf(stderr, "Ixa ERROR, " STR_FMT, ##__VA_ARGS__); fflush(stderr)
 	#define PRINTF_WARNING(STR_FMT, ...)	fprintf(stdout, "Ixa WARNING, " STR_FMT, ##__VA_ARGS__); fflush(stdout)
@@ -236,7 +237,7 @@ STIXA_Size ixaBitmapSizeJPEG(const IxaBYTE* bitmapData, const IxaUI32 sizeBytes)
 	STIXA_Size size; size.width = size.height = 0;
 	//Interpretar los marcadores JPEG
 	if(bitmapData[0]!=0xFF || bitmapData[1]!=M_SOI){
-		printf("Los datos no son de un JPEG, el primer marcador no es un SOI\n");
+		PRINTF_INFO("Los datos no son de un JPEG, el primer marcador no es un SOI\n");
 	} else {
 		IxaUI32 posicion = 2;
 		IxaBOOL continuar = IXA_TRUE;
@@ -269,7 +270,7 @@ STIXA_Size ixaBitmapSizeJPEG(const IxaBYTE* bitmapData, const IxaUI32 sizeBytes)
 						c2 = bitmapData[posicion++];
 						tamanoBloque = (((unsigned int) c1) << 8) + ((unsigned int) c2);
 						if(tamanoBloque<2){
-							printf("Error en el tamano del bloque JPG\n");
+							PRINTF_ERROR("en el tamano del bloque JPG\n");
 						} else {
 							IxaBYTE alto1, alto2, ancho1, ancho2; IxaUI32 alto, ancho;
 							/*precision 	= datosJPEG[posicion++];*/ posicion++;
@@ -282,7 +283,7 @@ STIXA_Size ixaBitmapSizeJPEG(const IxaBYTE* bitmapData, const IxaUI32 sizeBytes)
 							ancho		= (((IxaUI32) ancho1) << 8) + ((IxaUI32) ancho2);
 							size.height	= alto;
 							size.width	= ancho;
-							//printf("Marcador JPEG-SOF, precision(%d), ancho(%d), alto(%d), componentes(%d)\n", precision, ancho, alto, componentes);
+							//PRINTF_INFO("Marcador JPEG-SOF, precision(%d), ancho(%d), alto(%d), componentes(%d)\n", precision, ancho, alto, componentes);
 						}
 						continuar = IXA_FALSE;
 						break;
@@ -295,7 +296,7 @@ STIXA_Size ixaBitmapSizeJPEG(const IxaBYTE* bitmapData, const IxaUI32 sizeBytes)
 						c2 = bitmapData[posicion++];
 						tamanoBloque = (((unsigned int) c1) << 8) + ((unsigned int) c2);
 						if(tamanoBloque<2){
-							printf("Error en el tamano del bloque JPG\n");
+							PRINTF_ERROR("en el tamano del bloque JPG\n");
 							continuar = IXA_FALSE;
 						} else {
 							posicion += (tamanoBloque - 2); //ya incluye el tamano
@@ -436,17 +437,17 @@ IxaUI32 __ixaReaderGetBits(STIXA_Reader* rdr, IxaUI8 bits){
 		bitsSobrantesDer	= 0; while(((bitsIgnorarIzq + bitsLeer + bitsSobrantesDer) % 8) != 0) bitsSobrantesDer++;
 		//determinar cantidades en bytes
 		bytesLeer			= (bitsIgnorarIzq + bitsLeer + bitsSobrantesDer) / 8;
-		//printf("--------\n");
-		//printf("%d bytes a leer (bits = %d bits ignorar + %d bits datos + %d bits sobrantes)\n", bytesLeer, bitsIgnorarIzq, bitsLeer, bitsSobrantesDer);
+		//PRINTF_INFO("--------\n");
+		//PRINTF_INFO("%d bytes a leer (bits = %d bits ignorar + %d bits datos + %d bits sobrantes)\n", bytesLeer, bitsIgnorarIzq, bitsLeer, bitsSobrantesDer);
 		valor[0] = 0; valor[1] = 0; valor[2] = 0; valor[3] = 0;
 		//leer bytes sin consumirlos
 		__ixaReaderPeekBytes(rdr, &valor, bytesLeer);
-		//printf("Leidos (%d, %d, %d, %d)\n", valor[0], valor[1], valor[2], valor[3]);
+		//PRINTF_INFO("Leidos (%d, %d, %d, %d)\n", valor[0], valor[1], valor[2], valor[3]);
 		valor[0] = (valor[0] << bitsIgnorarIzq);
 		valor[0] = (valor[0] >> bitsIgnorarIzq); 		//trunca la izquierda no deseada
 		valor[bytesLeer-1] = (valor[bytesLeer-1] >> bitsSobrantesDer);
 		valor[bytesLeer-1] = (valor[bytesLeer-1] << bitsSobrantesDer);	//trunca la derecha no deseada
-		//printf("Trunca (%d, %d, %d, %d)\n", valor[0], valor[1], valor[2], valor[3]);
+		//PRINTF_INFO("Trunca (%d, %d, %d, %d)\n", valor[0], valor[1], valor[2], valor[3]);
 		if(bytesLeer==4){
 			valorBits = ((valor[0] << (24-bitsSobrantesDer)) | (valor[1] << (16-bitsSobrantesDer)) | (valor[2] << (8-bitsSobrantesDer)) | (valor[3] >> (bitsSobrantesDer)));
 		} else if(bytesLeer==3){
@@ -458,7 +459,7 @@ IxaUI32 __ixaReaderGetBits(STIXA_Reader* rdr, IxaUI8 bits){
 		} else {
 			valorBits = 0;
 		}
-		//printf("valorBits (%d)\n", valorBits);
+		//PRINTF_INFO("valorBits (%d)\n", valorBits);
 		//consumir bytes
 		__ixaReaderConsumeBytes(rdr, bitsSobrantesDer==0 ? bytesLeer : (bytesLeer-1));
 		rdr->_bitsRestantes = bitsSobrantesDer;
@@ -642,8 +643,8 @@ void ixaFileBinaryInit(STIXA_FileBits* filebin){
 }
 
 void ixaFileBinaryFinalize(STIXA_FileBits* filebin){
-	if(filebin->puntero!=NULL) IXA_FREE(filebin->puntero); filebin->puntero = NULL;
-	if(filebin->punteroAnexo!=NULL) IXA_FREE(filebin->punteroAnexo); filebin->punteroAnexo = NULL;
+	if(filebin->puntero!=NULL){ IXA_FREE(filebin->puntero); filebin->puntero = NULL; }
+	if(filebin->punteroAnexo!=NULL){ IXA_FREE(filebin->punteroAnexo); filebin->punteroAnexo = NULL; }
 }
 
 	
@@ -666,7 +667,7 @@ void ixaBitmapInit(STIXA_Bitmap* bitmap){
 }
 	
 void ixaBitmapFinalize(STIXA_Bitmap* bitmap){
-	if(bitmap->uncompressData!=NULL) IXA_FREE(bitmap->uncompressData); bitmap->uncompressData = NULL;
+	if(bitmap->uncompressData!=NULL){ IXA_FREE(bitmap->uncompressData); bitmap->uncompressData = NULL; }
 }
 
 	
@@ -681,7 +682,7 @@ void ixaFigureInit(STIXA_Figure* fig){
 }
 
 void ixaFigureFinalize(STIXA_Figure* fig){
-	if(fig->vertArr!=NULL) IXA_FREE(fig->vertArr);
+	if(fig->vertArr!=NULL){ IXA_FREE(fig->vertArr); }
 	fig->vertArr		= NULL;
 	fig->vertArrUse		= 0;
 	fig->vertArrSize	= 0;
@@ -775,7 +776,7 @@ void ixaFontInit(STIXA_Font* font){
 }
 
 void ixaFontFinalize(STIXA_Font* font){
-	if(font->fontName!=NULL) IXA_FREE(font->fontName);
+	if(font->fontName!=NULL){ IXA_FREE(font->fontName); }
 	if(font->glyphsArr!=NULL){
 		IxaUI16 i; const IxaUI16 use = font->glyphsArrUse;
 		for(i=0; i<use; i++) ixaGlyphFinalize(&font->glyphsArr[i]);
@@ -797,7 +798,7 @@ void ixaSoundInit(STIXA_Sound* sound){
 }
 
 void ixaSoundFinalize(STIXA_Sound* sound){
-	if(sound->soundData!=NULL) IXA_FREE(sound->soundData); sound->soundData	= NULL;
+	if(sound->soundData!=NULL){ IXA_FREE(sound->soundData); sound->soundData = NULL; }
 }
 
 //-------------------------------
@@ -1189,13 +1190,13 @@ IxaBOOL ixaSwfLoadFile(STIXA_SwfFile* swf, const char* path, PTRIXA_zlibUncompre
 				swf->_encabezado2.tamanoTwips 	= __ixaLoadRECT(&ixaRdr);
 				swf->_encabezado2.framerate		= __ixaReaderGetFixed8(&ixaRdr);
 				swf->_encabezado2.totalFrames	= __ixaReaderGetUI16(&ixaRdr);
-				//printf("Bits por coordenada %u (xMin=%d, xMax=%d, yMin=%d, yMax=%d)\n", _encabezado2.tamanoTwips.Nbits, _encabezado2.tamanoTwips.Xmin, _encabezado2.tamanoTwips.Xmax, _encabezado2.tamanoTwips.Ymin, _encabezado2.tamanoTwips.Ymax);
-				//printf("Framerate: %f\n", swf->_encabezado2.framerate);
-				//printf("Total de frames: %u\n", swf->_encabezado2.totalFrames);
+				//PRINTF_INFO("Bits por coordenada %u (xMin=%d, xMax=%d, yMin=%d, yMax=%d)\n", _encabezado2.tamanoTwips.Nbits, _encabezado2.tamanoTwips.Xmin, _encabezado2.tamanoTwips.Xmax, _encabezado2.tamanoTwips.Ymin, _encabezado2.tamanoTwips.Ymax);
+				//PRINTF_INFO("Framerate: %f\n", swf->_encabezado2.framerate);
+				//PRINTF_INFO("Total de frames: %u\n", swf->_encabezado2.totalFrames);
 				//posicion del primer TAG
 				swf->_posPrimerTag				= ixaRdr._posicionEnFlujo;
 				if(ixaRdr._bitsRestantes!=0) swf->_posPrimerTag++;
-				//printf("Primer TAG en posicion %d\n", swf->_posPrimerTag);
+				//PRINTF_INFO("Primer TAG en posicion %d\n", swf->_posPrimerTag);
 				//Parse SWF file
 				if(__ixaSwfParseTags(swf, &ixaRdr, &swf->_mainSprite, funcUncompress, 0)){
 					IXA_ASSERT(ixaRdr._conteoTotalBytesConsumidos==swf->_encabezado.bytesDatos)
@@ -1298,7 +1299,7 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 	for(i=0; i<currIdentLevel; i++) strIdent[i] = '-'; strIdent[currIdentLevel] = '\0';
 	do {
 		conteoTags++;
-		//printf("Interpretando TAG en pos (%d)\n", rdr->_posicionEnFlujo);
+		//PRINTF_INFO("Interpretando TAG en pos (%d)\n", rdr->_posicionEnFlujo);
 		__ixaReaderGetBytes(rdr, &encabezadoTag, sizeof(encabezadoTag));
 		tagType		= (encabezadoTag >> 6);
 		bytesTag	= (encabezadoTag & 0x3F);
@@ -1326,7 +1327,7 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 				__ixaReaderInit(&subRdr, __ixaReaderCurrentByte(rdr));
 				__ixaReaderGetBytes(&subRdr, &spriteID, sizeof(spriteID));
 				__ixaReaderGetBytes(&subRdr, &framesCount, sizeof(framesCount)); //este framecount no representa la cantidad de frames finales en la spriteSwf (todos los frames consecutivos sin cambios cuentan como uno solo)
-				//printf("Frame %d, Sprite definida id(%d) frames(%d)\n", indiceFrameActual, spriteID, framesCount);
+				//PRINTF_INFO("Frame %d, Sprite definida id(%d) frames(%d)\n", indiceFrameActual, spriteID, framesCount);
 				IXA_MALLOC(subSprite, STIXA_Sprite, sizeof(STIXA_Sprite), "subSprite")
 				ixaSpriteInit(subSprite);
 				if(__ixaSwfParseTags(swf, &subRdr, subSprite, funcUncompress, currIdentLevel + 1)){
@@ -1347,7 +1348,7 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 				__ixaSwfDictLoadBitmap(swf, rdr, (ENIXA_TagID)tagType, bytesTag, funcUncompress);
 			} else if (tagType==ENIXA_TagID_DefineShape || tagType==ENIXA_TagID_DefineShape2 || tagType==ENIXA_TagID_DefineShape3 || tagType==ENIXA_TagID_DefineShape4){
 				__ixaSwfDictLoadShape(swf, rdr, (ENIXA_TagID)tagType, bytesTag);
-				//printf("Frame %d, Shape definida ID(%d)\n", indiceFrameActual, _diccIDs->elemento[_diccIDs->conteo-1]);
+				//PRINTF_INFO("Frame %d, Shape definida ID(%d)\n", indiceFrameActual, _diccIDs->elemento[_diccIDs->conteo-1]);
 			} else if (tagType==ENIXA_TagID_DefineFont || tagType==ENIXA_TagID_DefineFont2 || tagType==ENIXA_TagID_DefineFont3){
 				__ixaSwfDictLoadFont(swf, rdr, (ENIXA_TagID)tagType, bytesTag);
 			} else if(tagType==ENIXA_TagID_DefineSound){
@@ -1360,7 +1361,7 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 					currFrameActive = IXA_TRUE;
 					currFrameIndex++;
 				}
-				//printf("Frame %d, ENIXA_TagID_PlaceObject2\n", indiceFrameActual);
+				//PRINTF_INFO("Frame %d, ENIXA_TagID_PlaceObject2\n", indiceFrameActual);
 				__ixaSwfFramePlaceObject(swf, rdr, sprite, (ENIXA_TagID)tagType, bytesTag);
 			} else if (tagType==ENIXA_TagID_RemoveObject || tagType==ENIXA_TagID_RemoveObject2){
 				if(!currFrameActive){
@@ -1368,7 +1369,7 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 					currFrameActive = IXA_TRUE;
 					currFrameIndex++;
 				}
-				//printf("Frame %d, ENIXA_TagID_RemoveObject\n", indiceFrameActual);
+				//PRINTF_INFO("Frame %d, ENIXA_TagID_RemoveObject\n", indiceFrameActual);
 				__ixaSwfFrameRemoveObject(swf, rdr, sprite, (ENIXA_TagID)tagType, bytesTag);
 			} else if (tagType==ENIXA_TagID_ShowFrame){
 				if(!currFrameActive){
@@ -1377,7 +1378,7 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 					currFrameIndex++;
 				}
 				currFrameActive = IXA_FALSE;
-				//printf("%sFrame %d, ENIXA_TagID_ShowFrame (nivel %d)\n", strIdent, indiceFrameActual, nivelIdentacion);
+				//PRINTF_INFO("%sFrame %d, ENIXA_TagID_ShowFrame (nivel %d)\n", strIdent, indiceFrameActual, nivelIdentacion);
 			/*} else if(tagType==ENIXA_TagID_StartSound){
 				if(nuevoFrameCreado==false){
 					spriteActual->agregarFrame();
@@ -1395,13 +1396,13 @@ IxaBOOL __ixaSwfParseTags(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sprite* s
 			//comprar los bytes consumidos con el total del TAG
 			__ixaReaderPositionInByteAligned(rdr);
 			if(bytesTag != rdr->_conteoTmpBytesConsumidos){
-				printf("%sError al interpretar el TAG '%s' de %d bytes (se consumieron %d, faltaron %d bytes)\n", strIdent, tagName, bytesTag, rdr->_conteoTmpBytesConsumidos, bytesTag - rdr->_conteoTmpBytesConsumidos);
+				PRINTF_INFO("%sError al interpretar el TAG '%s' de %d bytes (se consumieron %d, faltaron %d bytes)\n", strIdent, tagName, bytesTag, rdr->_conteoTmpBytesConsumidos, bytesTag - rdr->_conteoTmpBytesConsumidos);
 				interpretacionCorrecta = IXA_FALSE;
 				IXA_ASSERT(0)
 			}
 		}
 	} while(tagType != ENIXA_TagID_End && tagValido && interpretacionCorrecta);
-	//printf("%s%d TAGs (nivel %d)\n", strIdent, conteoTags, currIdentLevel);
+	//PRINTF_INFO("%s%d TAGs (nivel %d)\n", strIdent, conteoTags, currIdentLevel);
 	IXA_FREE(strIdent);
 	return interpretacionCorrecta;
 }
@@ -1464,13 +1465,13 @@ IxaBOOL __ixaSwfDictLoadFile(STIXA_SwfFile* swf, STIXA_Reader* rdr, ENIXA_TagID 
 		//Intentar descomprimir el anexo
 		/*STIXA_Size tamanoJPEG			= ixaBitmapSize(descripcion->puntero, descripcion->tamano, descripcion->tipo);
 		if(tamanoJPEG.width==0 || tamanoJPEG.height==0){
-			printf("Error, no se pudo extraer tamano de JPEG en ENIXA_TagID_DefineBitsJPEG3: ancho(%d) alto(%d)\n", tamanoJPEG.width, tamanoJPEG.height);
+			PRINTF_ERROR("no se pudo extraer tamano de JPEG en ENIXA_TagID_DefineBitsJPEG3: ancho(%d) alto(%d)\n", tamanoJPEG.width, tamanoJPEG.height);
 		} else {
 			if(tamanoAnexoComprimido>0){
 				long tamanoAnexoDescomprimido = (long)(tamanoJPEG.width * tamanoJPEG.height);
 				BYTE* anexoDescomprimido = (BYTE*)IXA_MALLOC(tamanoAnexoDescomprimido);
 				if(0 != ezuncompress(anexoDescomprimido, &tamanoAnexoDescomprimido, punteroAnexo, tamanoAnexoComprimido)){
-					printf("Error, descomprimiendo el mapa alpha anexo a JPEG.\n");
+					PRINTF_ERROR("descomprimiendo el mapa alpha anexo a JPEG.\n");
 					NBGestorMemoria::liberarMemoria(anexoDescomprimido);
 				} else {
 					descripcion->tamanoAnexo 	= (IxaUI32)tamanoAnexoDescomprimido;
@@ -1498,13 +1499,13 @@ IxaBOOL __ixaSwfDictLoadFile(STIXA_SwfFile* swf, STIXA_Reader* rdr, ENIXA_TagID 
 		//Intentar descomprimir el anexo
 		/*STIXA_Size tamanoJPEG			= ixaBitmapSize(descripcion->puntero, descripcion->tamano, descripcion->tipo);
 		if(tamanoJPEG.ancho==0.0 || tamanoJPEG.alto==0.0){
-			printf("Error, no se pudo extraer tamano de JPEG en ENIXA_TagID_DefineBitsJPEG3: ancho(%d) alto(%d)\n", (int)tamanoJPEG.ancho, (int)tamanoJPEG.alto);
+			PRINTF_ERROR("no se pudo extraer tamano de JPEG en ENIXA_TagID_DefineBitsJPEG3: ancho(%d) alto(%d)\n", (int)tamanoJPEG.ancho, (int)tamanoJPEG.alto);
 		} else {
 			if(tamanoAnexoComprimido>0){
 				long tamanoAnexoDescomprimido = (long)(tamanoJPEG.ancho * tamanoJPEG.alto);
 				BYTE* anexoDescomprimido = (BYTE*)NBGestorMemoria::reservarMemoria(tamanoAnexoDescomprimido, (ENMemoriaTipo)this->_tipoMemoriaResidencia); NB_DEFINE_NOMBRE_PUNTERO(anexoDescomprimido, "AUSwf::anexoDescomprimido")
 				if(0 != ezuncompress(anexoDescomprimido, &tamanoAnexoDescomprimido, punteroAnexo, tamanoAnexoComprimido)){
-					printf("Error, descomprimiendo el mapa alpha anexo a JPEG.\n");
+					PRINTF_ERROR("descomprimiendo el mapa alpha anexo a JPEG.\n");
 					NBGestorMemoria::liberarMemoria(anexoDescomprimido);
 				} else {
 					descripcion->tamanoAnexo 	= (IxaUI32)tamanoAnexoDescomprimido;
@@ -1605,19 +1606,19 @@ IxaBOOL __ixaSwfDictLoadShape(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA
 	if(bytesTag>0 && (tagType==ENIXA_TagID_DefineShape || tagType==ENIXA_TagID_DefineShape2 || tagType==ENIXA_TagID_DefineShape3 || tagType==ENIXA_TagID_DefineShape4)){
 		//
 		IxaUI16 idForma; STIXA_Rect limitesFigura; ENIXA_Shape tipoForma; STIXA_Shape* newShape;
-		__ixaReaderGetBytes(rdr, &idForma, sizeof(idForma)); //printf("   Id forma(%d)\n", idForma);
-		limitesFigura = __ixaLoadRECT(rdr); //printf("   Limites de figura (%d, %d, %d, %d) dimensiones(%d, %d)\n", limitesFigura.Xmin, limitesFigura.Ymin, limitesFigura.Xmax, limitesFigura.Ymax, limitesFigura.Xmax - limitesFigura.Xmin + 1, limitesFigura.Ymax - limitesFigura.Ymin + 1);
+		__ixaReaderGetBytes(rdr, &idForma, sizeof(idForma)); //PRINTF_INFO("   Id forma(%d)\n", idForma);
+		limitesFigura = __ixaLoadRECT(rdr); //PRINTF_INFO("   Limites de figura (%d, %d, %d, %d) dimensiones(%d, %d)\n", limitesFigura.Xmin, limitesFigura.Ymin, limitesFigura.Xmax, limitesFigura.Ymax, limitesFigura.Xmax - limitesFigura.Xmin + 1, limitesFigura.Ymax - limitesFigura.Ymin + 1);
 		if(tagType==ENIXA_TagID_DefineShape4){
 			/*STIXA_Rect limitesSinBordes =*/ __ixaLoadRECT(rdr);
 			__ixaReaderGetBitsUnsigned(rdr, 5); 	//reservado
 			__ixaReaderGetBitsUnsigned(rdr, 1);	//usaReglaRellenoWinding
 			__ixaReaderGetBitsUnsigned(rdr, 1);	//usaStrokesSinEscalar
 			__ixaReaderGetBitsUnsigned(rdr, 1);	//usaStrokeEscalados
-			//printf("   Limites de bordes (%d, %d, %d, %d)\n", limitesBordes.Xmin, limitesBordes.Ymin, limitesBordes.Xmax, limitesBordes.Ymax);
+			//PRINTF_INFO("   Limites de bordes (%d, %d, %d, %d)\n", limitesBordes.Xmin, limitesBordes.Ymin, limitesBordes.Xmax, limitesBordes.Ymax);
 		}
 		//AUMapaBitsLienzo* lienzo = new(this) AUMapaBitsLienzo(limitesFigura.Xmax-limitesFigura.Xmin+1, limitesFigura.Ymax-limitesFigura.Ymin+1);
 		//lienzo->formatearLienzo(255, 255, 255, 255);
-		//printf("   Lienzo de %d KBs\n", (int)((((limitesFigura.Xmax-limitesFigura.Xmin+1) * limitesFigura.Ymax-limitesFigura.Ymin+1) * 6) / 1024));
+		//PRINTF_INFO("   Lienzo de %d KBs\n", (int)((((limitesFigura.Xmax-limitesFigura.Xmin+1) * limitesFigura.Ymax-limitesFigura.Ymin+1) * 6) / 1024));
 		//SHAPEWITHSTYLE
 		tipoForma = ENIXA_ShapeNO_DEFINIDA;
 		if(tagType==ENIXA_TagID_DefineShape){
@@ -1645,23 +1646,23 @@ IxaBOOL __ixaSwfDictLoadShape(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA
 
 IxaBOOL __ixaSwfDictLoadFont(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA_TagID tagType, const IxaSI32 bytesTag){
 	IxaBOOL r = IXA_FALSE;
-	//if(this->_encabezado.version>=7) printf("ADVERTENCIA: considere usar archivos SWF 6 y previos para la definicion de fuentes (especifican las cajas de glyphs)\n");
+	//if(this->_encabezado.version>=7) PRINTF_WARNING("considere usar archivos SWF 6 y previos para la definicion de fuentes (especifican las cajas de glyphs)\n");
 	if(bytesTag > 0 && (tagType==ENIXA_TagID_DefineFont || tagType==ENIXA_TagID_DefineFont2 || tagType==ENIXA_TagID_DefineFont3)){ //ENIXA_TagID_DefineFont4 no esta soportado (fuentes dinamicas en formato CFF)
 		//Nota: ENIXA_TagID_DefineFont3 multiplica por 20 las cajas EM de los glyphs
-		const IxaUI16 fontCharID = __ixaReaderGetUI16(rdr); //printf("   fontID: %d\n", idFuente);
+		const IxaUI16 fontCharID = __ixaReaderGetUI16(rdr); //PRINTF_INFO("   fontID: %d\n", idFuente);
 		if(tagType==ENIXA_TagID_DefineFont){
 			//tabla de shapes
 			IxaUI16 i;
 			IxaUI16 offsetPrimerShape 	= __ixaReaderGetUI16(rdr);
-			IxaUI16 conteoGlyphs		= (offsetPrimerShape/2); //printf("Glyphs: %d\n", conteoGlyphs);
+			IxaUI16 conteoGlyphs		= (offsetPrimerShape/2); //PRINTF_INFO("Glyphs: %d\n", conteoGlyphs);
 			IxaUI32 posTablaOffsets		= rdr->_posicionEnFlujo;
 			IxaUI32* glyphsOffsets;
 			IXA_MALLOC(glyphsOffsets, IxaUI32, sizeof(IxaUI32) * (conteoGlyphs + 1), "glyphsOffsets")
 			glyphsOffsets[0]			= offsetPrimerShape;
-			//printf("Glyph offset[%d]: %d\n", 0, glyphsOffsets[0]);
+			//PRINTF_INFO("Glyph offset[%d]: %d\n", 0, glyphsOffsets[0]);
 			for(i=1; i<conteoGlyphs; i++){ //read the other offsets (the first was already read)
 				glyphsOffsets[i] = __ixaReaderGetUI16(rdr);
-				//printf("Glyph offset[%d]: %d\n", i, glyphsOffsets[i]);
+				//PRINTF_INFO("Glyph offset[%d]: %d\n", i, glyphsOffsets[i]);
 			}
 			for(i=0; i<conteoGlyphs; i++){ //consumir los shapes
 				STIXA_Shape glyphShape;
@@ -1705,11 +1706,11 @@ IxaBOOL __ixaSwfDictLoadFont(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA_
 				IxaUI8 i;
 				for(i=0; i<tamanoNombreFuente; i++) newFont->fontName[i] = __ixaReaderGetUI8(rdr);
 				newFont->fontName[i]	= '\0';
-				//printf("Font name: '%s'\n", newFont->fontName);
+				//PRINTF_INFO("Font name: '%s'\n", newFont->fontName);
 			}
 			newFont->isBold			= (estiloNegrilla != 0 ? IXA_TRUE : IXA_FALSE);
 			newFont->isItalic		= (estiloCurvada != 0 ? IXA_TRUE : IXA_FALSE);
-			//printf("   fontName: '%s'\n", nombreFuente->str());
+			//PRINTF_INFO("   fontName: '%s'\n", nombreFuente->str());
 			conteoGlyphs			= __ixaReaderGetUI16(rdr);		//es cero en caso de fuentes del sistema (sin Glyphs)
 			posTablaOffsets			= rdr->_posicionEnFlujo;
 			IXA_MALLOC(glyphsOffsets, IxaUI32, sizeof(IxaUI32) * (conteoGlyphs + 1), "glyphsOffsets");
@@ -1745,10 +1746,10 @@ IxaBOOL __ixaSwfDictLoadFont(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA_
 					newFont->glyphsArr[i].code 	= __ixaReaderGetUI8(rdr);
 				}
 				newFont->glyphsArr[i].advace	= 0;
-				//printf("Codigo de glyph %d: %d\n", i, (IxaSI32)codigos[i]);
+				//PRINTF_INFO("Codigo de glyph %d: %d\n", i, (IxaSI32)codigos[i]);
 			}
 			if(tienePlantilla==1){
-				//printf("   SI tiene plantilla\n");
+				//PRINTF_INFO("   SI tiene plantilla\n");
 				IxaUI16 espacioKerning;
 				newFont->ascendent		= __ixaReaderGetSI16(rdr);
 				newFont->descendent		= __ixaReaderGetSI16(rdr);
@@ -1759,7 +1760,7 @@ IxaBOOL __ixaSwfDictLoadFont(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA_
 				for(i=0; i<conteoGlyphs; i++){						//no usado de Flash PLayer 7 en adelante
 					STIXA_Rect limitesFuente = __ixaLoadRECT(rdr);
 					if(swf->_encabezado.version<7 && limitesFuente.Xmin!=limitesFuente.Xmax && limitesFuente.Ymin!=limitesFuente.Ymax){
-						//printf("Limites de glyph: (%d, %d)-(%d, %d)\n", limitesFuente.Xmin, limitesFuente.Ymin, limitesFuente.Xmax, limitesFuente.Ymax);
+						//PRINTF_INFO("Limites de glyph: (%d, %d)-(%d, %d)\n", limitesFuente.Xmin, limitesFuente.Ymin, limitesFuente.Xmax, limitesFuente.Ymax);
 						newFont->glyphsArr[i].shape.xMin = limitesFuente.Xmin;
 						newFont->glyphsArr[i].shape.xMax = limitesFuente.Xmax;
 						newFont->glyphsArr[i].shape.yMin = limitesFuente.Ymin;
@@ -1791,7 +1792,7 @@ IxaBOOL __ixaSwfDictLoadSound(STIXA_SwfFile* swf, STIXA_Reader* rdr, const ENIXA
 		newSound->samplerateType = __ixaReaderGetBitsUnsigned(rdr, 2); //0=5.5KHz, 1=11KHz, 2=22KHz, 3=44KHz
 		newSound->sampleBitsType = __ixaReaderGetBitsUnsigned(rdr, 1); //0=8 bits, 1=16 bits
 		newSound->channelsType	= __ixaReaderGetBitsUnsigned(rdr, 1); //0=Mono, 1=Stereo
-		newSound->samplesCount	= __ixaReaderGetUI32(rdr); //printf("Conteo de muestras: %u\n", conteoMuestras);
+		newSound->samplesCount	= __ixaReaderGetUI32(rdr); //PRINTF_INFO("Conteo de muestras: %u\n", conteoMuestras);
 		newSound->soundDataSize	= bytesTag - 7; //el encabezado suma 7 bytes en total
 		if(newSound->soundDataSize!=0){
 			IXA_MALLOC(newSound->soundData, IxaBYTE, sizeof(IxaBYTE) * newSound->soundDataSize, "STIXA_Sound.soundData")
@@ -1859,16 +1860,16 @@ IxaBOOL __ixaSwfFramePlaceObject(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Sp
 		}
 		if(hasCharacter==1){
 			if(move==0){
-				//printf("   AddObjectInDepth(%d)\n", depth);
+				//PRINTF_INFO("   AddObjectInDepth(%d)\n", depth);
 				ixaSpriteObjectAdd(sprite, depth, charID, name);
 			} else {
-				//printf("   ReplaceObjectInDepth(%d)\n", depth);
+				//PRINTF_INFO("   ReplaceObjectInDepth(%d)\n", depth);
 				ixaSpriteObjectReplace(sprite, depth, charID, name); //al reemplazar el objeto se conservan sus propiedades en escena
 			}
 		}
 		ixaSpriteObjectSetProps(sprite, depth, matrizAplicar, colorAplicar);
 		//
-		if(name!=NULL) IXA_FREE(name); name = NULL;
+		if(name!=NULL){ IXA_FREE(name); name = NULL; }
 		r = IXA_TRUE;
 	}
 	return r;
@@ -1936,13 +1937,13 @@ STIXA_Matrix __ixaLoadMATRIX(STIXA_Reader* rdr){
 	STIXA_Matrix matriz;
 	__ixaReaderPositionInByteAligned(rdr);	//lo especifica la documentacion
 	//
-	//printf("--------------MATRIZ--------------\n");
+	//PRINTF_INFO("--------------MATRIZ--------------\n");
 	matriz.tieneEscala 			= __ixaReaderGetBitsUnsigned(rdr, 1);
 	if(matriz.tieneEscala == 1){
 		matriz.bitsPorEscala 	= __ixaReaderGetBitsUnsigned(rdr, 5);
 		matriz.escalaX			= __ixaReaderGetBitsFixed16(rdr, matriz.bitsPorEscala);
 		matriz.escalaY			= __ixaReaderGetBitsFixed16(rdr, matriz.bitsPorEscala);
-		//printf("      Matriz: tiene escalacion (%d bits cada una) x(%f) y(%f)\n", matriz.bitsPorEscala, matriz.escalaX, matriz.escalaY);
+		//PRINTF_INFO("      Matriz: tiene escalacion (%d bits cada una) x(%f) y(%f)\n", matriz.bitsPorEscala, matriz.escalaX, matriz.escalaY);
 	} else {
 		matriz.bitsPorEscala 	= 0;
 		matriz.escalaX			= 1.0;
@@ -1953,7 +1954,7 @@ STIXA_Matrix __ixaLoadMATRIX(STIXA_Reader* rdr){
 		matriz.bitsPorRotacion	= __ixaReaderGetBitsUnsigned(rdr, 5);
 		matriz.skew0		= __ixaReaderGetBitsFixed16(rdr, matriz.bitsPorRotacion);
 		matriz.skew1		= __ixaReaderGetBitsFixed16(rdr, matriz.bitsPorRotacion);
-		//printf("      Matriz: tiene rotacion (%d bits cada una) skew0(%f) skew1(%f)\n", matriz.bitsPorRotacion, matriz.rotacion0, matriz.rotacion1);
+		//PRINTF_INFO("      Matriz: tiene rotacion (%d bits cada una) skew0(%f) skew1(%f)\n", matriz.bitsPorRotacion, matriz.rotacion0, matriz.rotacion1);
 	} else {
 		matriz.bitsPorRotacion	= 0;
 		matriz.skew0			= 0.0;
@@ -1962,7 +1963,7 @@ STIXA_Matrix __ixaLoadMATRIX(STIXA_Reader* rdr){
 	matriz.bitsPorTranslacion	= __ixaReaderGetBitsUnsigned(rdr, 5);
 	matriz.traslacionX			= __ixaReaderGetBitsSigned(rdr, matriz.bitsPorTranslacion);
 	matriz.traslacionY			= __ixaReaderGetBitsSigned(rdr, matriz.bitsPorTranslacion);
-	//printf("      Matriz: traslacion (%d, %d) (%d bits cada una)\n", matriz.traslacionX, matriz.traslacionY, matriz.bitsPorTranslacion);
+	//PRINTF_INFO("      Matriz: traslacion (%d, %d) (%d bits cada una)\n", matriz.traslacionX, matriz.traslacionY, matriz.bitsPorTranslacion);
 	return matriz;
 }
 
@@ -1972,8 +1973,8 @@ STIXA_Gradient __ixaLoadGRADIENT(STIXA_Reader* rdr, const ENIXA_Shape tipoForma,
 	gradiente.spreadMode 		= __ixaReaderGetBitsUnsigned(rdr, 2);
 	gradiente.interpolationMode	= __ixaReaderGetBitsUnsigned(rdr, 2);
 	gradiente.numGradients		= __ixaReaderGetBitsUnsigned(rdr, 4);
-	//printf("      Gradiente: %s\n", (esFocal?"FOCAL": "NO FOCAL"));
-	//printf("      Gradiente: spreadMode(%d) interpolationMode(%d) numGradients(%d)\n", gradiente.spreadMode, gradiente.interpolationMode, gradiente.numGradients);
+	//PRINTF_INFO("      Gradiente: %s\n", (esFocal?"FOCAL": "NO FOCAL"));
+	//PRINTF_INFO("      Gradiente: spreadMode(%d) interpolationMode(%d) numGradients(%d)\n", gradiente.spreadMode, gradiente.interpolationMode, gradiente.numGradients);
 	//registros
 	for(i=0; i<gradiente.numGradients; i++){
 		__ixaReaderGetUI8(rdr);		//record::ratio
@@ -1981,18 +1982,18 @@ STIXA_Gradient __ixaLoadGRADIENT(STIXA_Reader* rdr, const ENIXA_Shape tipoForma,
 			/*BYTE r =*/ __ixaReaderGetUI8(rdr);	//record::color::r
 			/*BYTE g =*/ __ixaReaderGetUI8(rdr);	//record::color::g
 			/*BYTE b =*/ __ixaReaderGetUI8(rdr);	//record::color::b
-			//printf("      Gradiente: colorRGB(%d, %d, %d)\n", r, g, b);
+			//PRINTF_INFO("      Gradiente: colorRGB(%d, %d, %d)\n", r, g, b);
 		} else {
 			/*BYTE r =*/ __ixaReaderGetUI8(rdr);	//record::color::r
 			/*BYTE g =*/ __ixaReaderGetUI8(rdr);	//record::color::g
 			/*BYTE b =*/ __ixaReaderGetUI8(rdr);	//record::color::b
 			/*BYTE a =*/ __ixaReaderGetUI8(rdr);	//record::color::a
-			//printf("      Gradiente: colorRGB(%d, %d, %d, %d)\n", r, g, b, a);
+			//PRINTF_INFO("      Gradiente: colorRGB(%d, %d, %d, %d)\n", r, g, b, a);
 		}
 	}
 	if(isFocal){
 		gradiente.focalPoint 	= (__ixaReaderGetUI16(rdr));
-		//printf("      Gradiente: puntoFocal(%d)\n", gradiente.focalPoint);
+		//PRINTF_INFO("      Gradiente: puntoFocal(%d)\n", gradiente.focalPoint);
 	} else {
 		gradiente.focalPoint	= 0;
 	}
@@ -2006,7 +2007,7 @@ STIXA_StyleLine __ixaLoadLINESTYLE(STIXA_Reader* rdr, const ENIXA_Shape formType
 	estiloLinea.color.g 	= 0;
 	estiloLinea.color.b 	= 0;
 	estiloLinea.color.a 	= 0;
-	//printf("      Estilo linea: ancho(%d)\n", estiloLinea.anchoLinea);
+	//PRINTF_INFO("      Estilo linea: ancho(%d)\n", estiloLinea.anchoLinea);
 	if(isLineStyle2){
 		IxaUI32 jointStyle, hasFill;
 		__ixaReaderGetBitsUnsigned(rdr, 2);	//StartCapStyle
@@ -2026,7 +2027,7 @@ STIXA_StyleLine __ixaLoadLINESTYLE(STIXA_Reader* rdr, const ENIXA_Shape formType
 			estiloLinea.color.g = __ixaReaderGetUI8(rdr);	//color::g
 			estiloLinea.color.b = __ixaReaderGetUI8(rdr);	//color::b
 			estiloLinea.color.a = __ixaReaderGetUI8(rdr);	//color::a
-			//printf("      Estilo linea: colorRGB(%d, %d, %d, %d)\n", estiloLinea.color.r, estiloLinea.color.g, estiloLinea.color.b, estiloLinea.color.a);
+			//PRINTF_INFO("      Estilo linea: colorRGB(%d, %d, %d, %d)\n", estiloLinea.color.r, estiloLinea.color.g, estiloLinea.color.b, estiloLinea.color.a);
 		} else {
 			__ixaLoadFILLSTYLE(rdr, formType);
 		}
@@ -2036,13 +2037,13 @@ STIXA_StyleLine __ixaLoadLINESTYLE(STIXA_Reader* rdr, const ENIXA_Shape formType
 			estiloLinea.color.g = __ixaReaderGetUI8(rdr);	//color::g
 			estiloLinea.color.b = __ixaReaderGetUI8(rdr);	//color::b
 			estiloLinea.color.a = 255;
-			//printf("      Estilo linea: colorRGB(%d, %d, %d)\n", estiloLinea.color.r, estiloLinea.color.g, estiloLinea.color.b);
+			//PRINTF_INFO("      Estilo linea: colorRGB(%d, %d, %d)\n", estiloLinea.color.r, estiloLinea.color.g, estiloLinea.color.b);
 		} else {
 			estiloLinea.color.r = __ixaReaderGetUI8(rdr);	//color::r
 			estiloLinea.color.g = __ixaReaderGetUI8(rdr);	//color::g
 			estiloLinea.color.b = __ixaReaderGetUI8(rdr);	//color::b
 			estiloLinea.color.a = __ixaReaderGetUI8(rdr);	//color::a
-			//printf("      Estilo linea: colorRGB(%d, %d, %d, %d)\n", estiloLinea.color.r, estiloLinea.color.g, estiloLinea.color.b, estiloLinea.color.a);
+			//PRINTF_INFO("      Estilo linea: colorRGB(%d, %d, %d, %d)\n", estiloLinea.color.r, estiloLinea.color.g, estiloLinea.color.b, estiloLinea.color.a);
 		}
 	}
 	return estiloLinea;
@@ -2055,31 +2056,31 @@ STIXA_StyleFill __ixaLoadFILLSTYLE(STIXA_Reader* rdr, const ENIXA_Shape formType
 	relleno.color.g	 		= 0;
 	relleno.color.b	 		= 0;
 	relleno.color.a	 		= 0;
-	//printf("LEYENDO ESTILO DE RELLENO\n");
-	//printf("      Estilo relleno: tipo (%d) (%s)\n", relleno.tipoRelleno, (relleno.tipoRelleno == ENIXA_StyleFillSolido || relleno.tipoRelleno == ENIXA_StyleFillgradienteLinear || relleno.tipoRelleno == ENIXA_StyleFillgradienteRadial || relleno.tipoRelleno == ENIXA_StyleFillgradienteRadialFocal || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetido || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortado || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetidoNoSuavizado || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado?"ok": "NO VALIDO"));
+	//PRINTF_INFO("LEYENDO ESTILO DE RELLENO\n");
+	//PRINTF_INFO("      Estilo relleno: tipo (%d) (%s)\n", relleno.tipoRelleno, (relleno.tipoRelleno == ENIXA_StyleFillSolido || relleno.tipoRelleno == ENIXA_StyleFillgradienteLinear || relleno.tipoRelleno == ENIXA_StyleFillgradienteRadial || relleno.tipoRelleno == ENIXA_StyleFillgradienteRadialFocal || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetido || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortado || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetidoNoSuavizado || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado?"ok": "NO VALIDO"));
 	if(relleno.tipoRelleno == ENIXA_StyleFillSolido){
 		if(formType == ENIXA_Shape1 || formType == ENIXA_Shape2){
 			relleno.color.r	 = __ixaReaderGetUI8(rdr);
 			relleno.color.g	 = __ixaReaderGetUI8(rdr);
 			relleno.color.b	 = __ixaReaderGetUI8(rdr);
 			relleno.color.a	 = 255;
-			//printf("      Estilo relleno: colorRGB (%d, %d, %d)\n", relleno.color.r, relleno.color.g, relleno.color.b);
+			//PRINTF_INFO("      Estilo relleno: colorRGB (%d, %d, %d)\n", relleno.color.r, relleno.color.g, relleno.color.b);
 		} else {
 			relleno.color.r	 = __ixaReaderGetUI8(rdr);
 			relleno.color.g	 = __ixaReaderGetUI8(rdr);
 			relleno.color.b	 = __ixaReaderGetUI8(rdr);
 			relleno.color.a	 = __ixaReaderGetUI8(rdr);
-			//printf("      Estilo relleno: colorRGBA (%d, %d, %d, %d)\n", relleno.color.r, relleno.color.g, relleno.color.b, relleno.color.a);
+			//PRINTF_INFO("      Estilo relleno: colorRGBA (%d, %d, %d, %d)\n", relleno.color.r, relleno.color.g, relleno.color.b, relleno.color.a);
 		}
 	}
 	if(relleno.tipoRelleno == ENIXA_StyleFillgradienteLinear || relleno.tipoRelleno == ENIXA_StyleFillgradienteRadial || relleno.tipoRelleno == ENIXA_StyleFillgradienteRadialFocal){
-		//printf("      Estilo relleno: incluye gradiente (matriz y gradiente)\n");
+		//PRINTF_INFO("      Estilo relleno: incluye gradiente (matriz y gradiente)\n");
 		relleno.matrizGradiente = __ixaLoadMATRIX(rdr);
 		relleno.gradiente		= __ixaLoadGRADIENT(rdr, formType, (relleno.tipoRelleno == ENIXA_StyleFillgradienteRadialFocal));
 	}
 	if(relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetido || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortado || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetidoNoSuavizado || relleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado){
 		relleno.idMapaBits 		= __ixaReaderGetUI16(rdr);
-		//printf("      Estilo relleno: incluye mapa de bits id(%d) y matriz\n", relleno.idMapaBits);
+		//PRINTF_INFO("      Estilo relleno: incluye mapa de bits id(%d) y matriz\n", relleno.idMapaBits);
 		relleno.matrizMapaBits 	= __ixaLoadMATRIX(rdr);
 	}
 	return relleno;
@@ -2142,12 +2143,12 @@ STIXA_SoundInfo __ixaLoadSOUNDINFO(STIXA_Reader* rdr){
 	STIXA_SoundInfo datosSonido;
 	__ixaReaderPositionInByteAligned(rdr);
 	/*IxaUI32 reservado				=*/ __ixaReaderGetBitsUnsigned(rdr, 2); //reservado
-	datosSonido.syncStop			= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //printf("Stop (%d)\n", datosSonido.syncStop);
-	datosSonido.syncNoMultiple		= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //printf("NoMultiple (%d)\n", datosSonido.syncNoMultiple);
-	datosSonido.tieneInfoVolumen	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //printf("Tiene info Volumen (%d)\n", datosSonido.tieneInfoVolumen);
-	datosSonido.tieneRepeticiones	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //printf("Tiene info Repeticiones (%d)\n", datosSonido.tieneRepeticiones);
-	datosSonido.tienePuntoSalida	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //printf("Tiene info PuntoSalida (%d)\n", datosSonido.tienePuntoSalida);
-	datosSonido.tienePuntoEntrada	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //printf("Tiene info PuntoEntrada (%d)\n", datosSonido.tienePuntoEntrada);
+	datosSonido.syncStop			= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //PRINTF_INFO("Stop (%d)\n", datosSonido.syncStop);
+	datosSonido.syncNoMultiple		= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //PRINTF_INFO("NoMultiple (%d)\n", datosSonido.syncNoMultiple);
+	datosSonido.tieneInfoVolumen	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //PRINTF_INFO("Tiene info Volumen (%d)\n", datosSonido.tieneInfoVolumen);
+	datosSonido.tieneRepeticiones	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //PRINTF_INFO("Tiene info Repeticiones (%d)\n", datosSonido.tieneRepeticiones);
+	datosSonido.tienePuntoSalida	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //PRINTF_INFO("Tiene info PuntoSalida (%d)\n", datosSonido.tienePuntoSalida);
+	datosSonido.tienePuntoEntrada	= (__ixaReaderGetBitsUnsigned(rdr, 1)!=0); //PRINTF_INFO("Tiene info PuntoEntrada (%d)\n", datosSonido.tienePuntoEntrada);
 	//
 	datosSonido.puntoEntrada		= 0;
 	datosSonido.puntoSalida			= 0;
@@ -2157,16 +2158,16 @@ STIXA_SoundInfo __ixaLoadSOUNDINFO(STIXA_Reader* rdr){
 	//
 	if(datosSonido.tienePuntoEntrada)	datosSonido.puntoEntrada	= __ixaReaderGetUI32(rdr);
 	if(datosSonido.tienePuntoSalida)	datosSonido.puntoSalida		= __ixaReaderGetUI32(rdr);
-	if(datosSonido.tieneRepeticiones)	datosSonido.repeticiones	= __ixaReaderGetUI16(rdr); //printf("Repeticiones: %d\n", (IxaSI32)datosSonido.repeticiones);
+	if(datosSonido.tieneRepeticiones)	datosSonido.repeticiones	= __ixaReaderGetUI16(rdr); //PRINTF_INFO("Repeticiones: %d\n", (IxaSI32)datosSonido.repeticiones);
 	if(datosSonido.tieneInfoVolumen){
 		datosSonido.conteoPuntosVolumen = __ixaReaderGetUI8(rdr);
-		//printf("Conteo de puntos de volumen: %d\n", (IxaSI32)datosSonido.conteoPuntosVolumen);
+		//PRINTF_INFO("Conteo de puntos de volumen: %d\n", (IxaSI32)datosSonido.conteoPuntosVolumen);
 		if(datosSonido.conteoPuntosVolumen!=0){
 			IxaUI8 iVolumen;
 			IXA_MALLOC(datosSonido.puntosVolumen, STIXA_SoundEnv, sizeof(STIXA_SoundEnv) * datosSonido.conteoPuntosVolumen, "STIXA_SoundInfo.puntosVolumen")
 			for(iVolumen=0; iVolumen<datosSonido.conteoPuntosVolumen; iVolumen++){
 				datosSonido.puntosVolumen[iVolumen] = __ixaLoadSOUNDENVELOPE(rdr);
-				//printf("PuntoVolumen[%d], pos(%d) volIzq(%d) volDer(%d)\n", iVolumen, datosSonido.puntosVolumen[iVolumen].pos44, datosSonido.puntosVolumen[iVolumen].volumenIzq, datosSonido.puntosVolumen[iVolumen].volumenDer);
+				//PRINTF_INFO("PuntoVolumen[%d], pos(%d) volIzq(%d) volDer(%d)\n", iVolumen, datosSonido.puntosVolumen[iVolumen].pos44, datosSonido.puntosVolumen[iVolumen].volumenIzq, datosSonido.puntosVolumen[iVolumen].volumenDer);
 			}
 		}
 	}
@@ -2204,11 +2205,11 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 	if(withStyle){
 		IxaUI32 i; IxaUI32 conteoEstilosRelleno; IxaUI32 conteoEstilosLineas;
 		//FILLSTYLEARRAY
-		conteoEstilosRelleno = __ixaReaderGetUI8(rdr); //printf("   Conteo estilos rellenos CORTO (%d)\n", conteoEstilosRelleno);
+		conteoEstilosRelleno = __ixaReaderGetUI8(rdr); //PRINTF_INFO("   Conteo estilos rellenos CORTO (%d)\n", conteoEstilosRelleno);
 		if(conteoEstilosRelleno==0xFF){
-			conteoEstilosRelleno = __ixaReaderGetUI16(rdr); //printf("   Conteo estilos rellenos LARGO (%d)\n", conteoEstilosRelleno);
+			conteoEstilosRelleno = __ixaReaderGetUI16(rdr); //PRINTF_INFO("   Conteo estilos rellenos LARGO (%d)\n", conteoEstilosRelleno);
 		}
-		//printf("   Conteo de estilos de relleno iniciales: %d\n", conteoEstilosRelleno);
+		//PRINTF_INFO("   Conteo de estilos de relleno iniciales: %d\n", conteoEstilosRelleno);
 		for(i=0; i<conteoEstilosRelleno; i++){
 			IXA_ASSERT(fillStylesArrUse <= fillStylesArrSize) //Assert if memory corrupted
 			if(fillStylesArrUse == fillStylesArrSize){
@@ -2217,11 +2218,11 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 			fillStylesArr[fillStylesArrUse++] = __ixaLoadFILLSTYLE(rdr, formType);
 		}
 		//LINESTYLEARRAY
-		conteoEstilosLineas = __ixaReaderGetUI8(rdr); //printf("   Conteo estilos lineas CORTO (%d)\n", conteoEstilosLineas);
+		conteoEstilosLineas = __ixaReaderGetUI8(rdr); //PRINTF_INFO("   Conteo estilos lineas CORTO (%d)\n", conteoEstilosLineas);
 		if(conteoEstilosLineas==0xFF){
-			conteoEstilosLineas = __ixaReaderGetUI16(rdr); //printf("   Conteo estilos lineas LARGO (%d)\n", conteoEstilosLineas);
+			conteoEstilosLineas = __ixaReaderGetUI16(rdr); //PRINTF_INFO("   Conteo estilos lineas LARGO (%d)\n", conteoEstilosLineas);
 		}
-		//printf("   Conteo de estilos de lineas iniciales: %d\n", conteoEstilosLineas);
+		//PRINTF_INFO("   Conteo de estilos de lineas iniciales: %d\n", conteoEstilosLineas);
 		for(i=0; i<conteoEstilosLineas; i++){
 			IXA_ASSERT(lineStylesArrUse <= lineStylesArrSize) //Assert if memory corrupted
 			if(lineStylesArrUse == lineStylesArrSize){
@@ -2230,13 +2231,13 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 			lineStylesArr[lineStylesArrUse++] = __ixaLoadLINESTYLE(rdr, formType, (formType==ENIXA_Shape4));
 		}
 	} else {
-		//printf("   Figura no tiene estilos iniciales\n");
+		//PRINTF_INFO("   Figura no tiene estilos iniciales\n");
 	}
-	bitsEnRellenos	= __ixaReaderGetBitsUnsigned(rdr, 4);	//printf("   Bits por estilo relleno (%d)\n", bitsEnRellenos);
-	bitsEnLineas 	= __ixaReaderGetBitsUnsigned(rdr, 4);	//printf("   Bits por estilo lineas (%d)\n", bitsEnLineas);
+	bitsEnRellenos	= __ixaReaderGetBitsUnsigned(rdr, 4);	//PRINTF_INFO("   Bits por estilo relleno (%d)\n", bitsEnRellenos);
+	bitsEnLineas 	= __ixaReaderGetBitsUnsigned(rdr, 4);	//PRINTF_INFO("   Bits por estilo lineas (%d)\n", bitsEnLineas);
 	//SHAPE RECORDS
 	__ixaReaderPositionInByteAligned(rdr);
-	//printf("   ShapeRecords...\n");
+	//PRINTF_INFO("   ShapeRecords...\n");
 	do {
 		//__ixaReaderPositionInByteAligned(rdr); //aunque la DOC oficial diga que debene star byte-alineados, en la practica no es asi.
 		IxaUI32 esEdge = __ixaReaderGetBitsUnsigned(rdr, 1);
@@ -2248,7 +2249,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 			IxaUI32 StateMoveTo		= __ixaReaderGetBitsUnsigned(rdr, 1);
 			if(StateNewStyles==0 && StateLineStyle==0 && StateFillStyle1==0 && StateFillStyle0==0 && StateMoveTo==0){
 				//ENDSHAPERECORD
-				//printf("   ENDSHAPERECORD\n");
+				//PRINTF_INFO("   ENDSHAPERECORD\n");
 				contCicle = IXA_FALSE;
 				//
 				if(!newFigureIsActive){
@@ -2260,11 +2261,11 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 				newFigureIsActive = IXA_FALSE;
 				//posXTmp = 0;
 				//posYTmp = 0;
-				//printf("Despues de ENDSHAPERECORD quedaron %d bits\n", lector->bitsSinLeerDeByteActual());
+				//PRINTF_INFO("Despues de ENDSHAPERECORD quedaron %d bits\n", lector->bitsSinLeerDeByteActual());
 				__ixaReaderPositionInByteAligned(rdr);
 			} else {
 				//STYLECHANGERECORD
-				//printf("   STYLECHANGERECORD\n");
+				//PRINTF_INFO("   STYLECHANGERECORD\n");
 				IxaUI32 FillStyle0 = 0; IxaUI32 FillStyle1 = 0; IxaUI32 LineStyle = 0;
 				//PRIMERO CARGAR LOS DATOS DEL REGISTRO
 				if(StateMoveTo!=0){
@@ -2273,7 +2274,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 					IxaSI32 MoveDeltaY = __ixaReaderGetBitsSigned(rdr, MoveBits);
 					posXTmp = MoveDeltaX; //pendiente: es sumar a la posicion actual o establecer como posicion actual?
 					posYTmp = MoveDeltaY; //pendiente: es sumar a la posicion actual o establecer como posicion actual?
-					//printf("   Establecer movimiento: x(%d) y(%d), %d bits leidos\n", MoveDeltaX, MoveDeltaY, MoveBits);
+					//PRINTF_INFO("   Establecer movimiento: x(%d) y(%d), %d bits leidos\n", MoveDeltaX, MoveDeltaY, MoveBits);
 					//primera figura o cambio de figura
 					if(newFigureIsActive){
 						ixaShapeFigureAdd(dstShape, &newFigure); //no need to call ixaFigureFinalize(newFigure) when is added to a form.
@@ -2295,11 +2296,11 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 					lineStylesArrUse = 0;
 					fillStylesArrUse = 0;
 					//Nuevo FILLSTYLEARRAY
-					conteoEstilosRelleno = __ixaReaderGetUI8(rdr); //printf("   Conteo nuevos estilos rellenos CORTO (%d)\n", conteoEstilosRelleno);
+					conteoEstilosRelleno = __ixaReaderGetUI8(rdr); //PRINTF_INFO("   Conteo nuevos estilos rellenos CORTO (%d)\n", conteoEstilosRelleno);
 					if(conteoEstilosRelleno==0xFF){
-						conteoEstilosRelleno = __ixaReaderGetUI16(rdr); //printf("   Conteo nuevos estilos rellenos LARGO (%d)\n", conteoEstilosRelleno);
+						conteoEstilosRelleno = __ixaReaderGetUI16(rdr); //PRINTF_INFO("   Conteo nuevos estilos rellenos LARGO (%d)\n", conteoEstilosRelleno);
 					}
-					//printf("   Conteo de estilos de relleno cambiando: %d\n", conteoEstilosRelleno);
+					//PRINTF_INFO("   Conteo de estilos de relleno cambiando: %d\n", conteoEstilosRelleno);
 					for(i=0; i<conteoEstilosRelleno; i++){
 						IXA_ASSERT(fillStylesArrUse <= fillStylesArrSize) //Assert if memory corrupted
 						if(fillStylesArrUse == fillStylesArrSize){
@@ -2308,11 +2309,11 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 						fillStylesArr[fillStylesArrUse++] = __ixaLoadFILLSTYLE(rdr, formType);
 					}
 					//Nuevo LINESTYLEARRAY
-					conteoEstilosLineas = __ixaReaderGetUI8(rdr); //printf("   Conteo nuevos estilos lineas CORTO (%d)\n", conteoEstilosLineas);
+					conteoEstilosLineas = __ixaReaderGetUI8(rdr); //PRINTF_INFO("   Conteo nuevos estilos lineas CORTO (%d)\n", conteoEstilosLineas);
 					if(conteoEstilosLineas==0xFF){
-						conteoEstilosLineas = __ixaReaderGetUI16(rdr); //printf("   Conteo nuevos estilos lineas LARGO (%d)\n", conteoEstilosLineas);
+						conteoEstilosLineas = __ixaReaderGetUI16(rdr); //PRINTF_INFO("   Conteo nuevos estilos lineas LARGO (%d)\n", conteoEstilosLineas);
 					}
-					//printf("   Conteo de estilos de linea cambiando: %d\n", conteoEstilosLineas);
+					//PRINTF_INFO("   Conteo de estilos de linea cambiando: %d\n", conteoEstilosLineas);
 					for(i=0; i<conteoEstilosLineas; i++){
 						IXA_ASSERT(lineStylesArrUse <= lineStylesArrSize) //Assert if memory corrupted
 						if(lineStylesArrUse == lineStylesArrSize){
@@ -2321,8 +2322,8 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 						lineStylesArr[lineStylesArrUse++] = __ixaLoadLINESTYLE(rdr, formType, (formType==ENIXA_Shape4));
 					}
 					//
-					NumFillBits = __ixaReaderGetBitsUnsigned(rdr, 4); //printf("   Nuevos bits por estilo relleno (%d)\n", NumFillBits);
-					NumLineBits = __ixaReaderGetBitsUnsigned(rdr, 4); //printf("   Nuevos bits por estilo linea (%d)\n", NumLineBits);
+					NumFillBits = __ixaReaderGetBitsUnsigned(rdr, 4); //PRINTF_INFO("   Nuevos bits por estilo relleno (%d)\n", NumFillBits);
+					NumLineBits = __ixaReaderGetBitsUnsigned(rdr, 4); //PRINTF_INFO("   Nuevos bits por estilo linea (%d)\n", NumLineBits);
 					if(bitsEnRellenos != NumFillBits) bitsEnRellenos = NumFillBits;
 					if(bitsEnLineas != NumLineBits) bitsEnLineas = NumLineBits;
 				}
@@ -2336,9 +2337,9 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 						estiloRellenoIzqExplicito	= IXA_FALSE;
 						colorRellenoIzqActivo 		= colorVacio;
 						mapaBitsRellenoIzq			= 0;
-						//printf("   ADVERTENCIA swfSHAPE, se intento establecer el estilo de relleno0 #%d de %d (estableciendo vacio)\n", FillStyle0, fillStylesArrUse);
+						//PRINTF_INFO("   ADVERTENCIA swfSHAPE, se intento establecer el estilo de relleno0 #%d de %d (estableciendo vacio)\n", FillStyle0, fillStylesArrUse);
 					} else {
-						//printf("   Cambiando estilo de lleneno-0 #%d de %d\n", FillStyle0, estilosRelleno->conteo);
+						//PRINTF_INFO("   Cambiando estilo de lleneno-0 #%d de %d\n", FillStyle0, estilosRelleno->conteo);
 						STIXA_StyleFill estiloRelleno = fillStylesArr[FillStyle0 - 1];
 						IXA_ASSERT(FillStyle0>0 && FillStyle0<=fillStylesArrUse)
 						if(estiloRelleno.tipoRelleno == ENIXA_StyleFillSolido){
@@ -2348,7 +2349,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 							colorRellenoIzqActivo.g 	= estiloRelleno.color.g;
 							colorRellenoIzqActivo.b 	= estiloRelleno.color.b;
 							colorRellenoIzqActivo.a 	= estiloRelleno.color.a;
-							//printf("SWF RellenoIzq activado: (%d, %d, %d, %d)\n", colorRellenoIzqActivo.r, colorRellenoIzqActivo.g, colorRellenoIzqActivo.b, colorRellenoIzqActivo.a);
+							//PRINTF_INFO("SWF RellenoIzq activado: (%d, %d, %d, %d)\n", colorRellenoIzqActivo.r, colorRellenoIzqActivo.g, colorRellenoIzqActivo.b, colorRellenoIzqActivo.a);
 						} else if(estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortado || estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado || estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetido || estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetidoNoSuavizado){
 							//Nota, cuando un mapa de bits es encapsulado en un grafico SWF se pinta con relleno "ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado"
 							estiloRellenoIzqExplicito	= IXA_TRUE;
@@ -2356,7 +2357,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 							mapaBitsRellenoIzq 			= estiloRelleno.idMapaBits;
 						}
 					}
-					//printf("   Establecer FillStyle0(%d), %d bits leidos\n", FillStyle0, bitsEnRellenos);
+					//PRINTF_INFO("   Establecer FillStyle0(%d), %d bits leidos\n", FillStyle0, bitsEnRellenos);
 				}
 				if(StateFillStyle1!=0){
 					if(FillStyle1==0){ //Pendiente resolver como evitar que "FillStyle1>estilosRelleno->conteo"
@@ -2367,9 +2368,9 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 						esitloRellenoDerExplicito	= IXA_FALSE;
 						colorRellenoDerActivo 		= colorVacio;
 						mapaBitsRellenoDer			= 0;
-						//printf("   ADVERTENCIA swfSHAPE, se intento establecer el estilo de relleno1 #%d de %d (estableciendo vacio)\n", FillStyle1, fillStylesArrUse);
+						//PRINTF_INFO("   ADVERTENCIA swfSHAPE, se intento establecer el estilo de relleno1 #%d de %d (estableciendo vacio)\n", FillStyle1, fillStylesArrUse);
 					} else {
-						//printf("   Cambiando estilo de lleneno-1 #%d de %d\n", FillStyle1, estilosRelleno->conteo);
+						//PRINTF_INFO("   Cambiando estilo de lleneno-1 #%d de %d\n", FillStyle1, estilosRelleno->conteo);
 						STIXA_StyleFill estiloRelleno = fillStylesArr[FillStyle1 - 1];
 						IXA_ASSERT(FillStyle1>0 && FillStyle1<=fillStylesArrUse)
 						if(estiloRelleno.tipoRelleno == ENIXA_StyleFillSolido){
@@ -2379,7 +2380,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 							colorRellenoDerActivo.g 	= estiloRelleno.color.g;
 							colorRellenoDerActivo.b 	= estiloRelleno.color.b;
 							colorRellenoDerActivo.a 	= estiloRelleno.color.a;
-							//printf("SWF RellenoDer activado: (%d, %d, %d, %d)\n", colorRellenoDerActivo.r, colorRellenoDerActivo.g, colorRellenoDerActivo.b, colorRellenoDerActivo.a);
+							//PRINTF_INFO("SWF RellenoDer activado: (%d, %d, %d, %d)\n", colorRellenoDerActivo.r, colorRellenoDerActivo.g, colorRellenoDerActivo.b, colorRellenoDerActivo.a);
 						} else if(estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortado || estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado || estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetido || estiloRelleno.tipoRelleno == ENIXA_StyleFillmapaDeBitsRepetidoNoSuavizado){
 							//Nota, cuando un mapa de bits es encapsulado en un grafico SWF se pinta con relleno "ENIXA_StyleFillmapaDeBitsRecortadoNoSuavizado"
 							esitloRellenoDerExplicito	= IXA_TRUE;
@@ -2387,7 +2388,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 							mapaBitsRellenoDer 			= estiloRelleno.idMapaBits;
 						}
 					}
-					//printf("   Establecer FillStyle1(%d), %d bits leidos\n", FillStyle1, bitsEnRellenos);
+					//PRINTF_INFO("   Establecer FillStyle1(%d), %d bits leidos\n", FillStyle1, bitsEnRellenos);
 				}
 				if(StateLineStyle!=0){
 					if(LineStyle==0){ //Pendiente resolver como evitar que "LineStyle>estilosLinea->conteo"
@@ -2398,7 +2399,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 						estiloLineaExplicito	= IXA_TRUE;
 						anchoLineaActivo 		= 0;
 						colorLineaActivo		= colorVacio;
-						//printf("   ADVERTENCIA swfSHAPE, se intento establecer le estilo de linea #%d de %d (estableciendo vacio)\n", LineStyle, lineStylesArrUse);
+						//PRINTF_INFO("   ADVERTENCIA swfSHAPE, se intento establecer le estilo de linea #%d de %d (estableciendo vacio)\n", LineStyle, lineStylesArrUse);
 					} else {
 						STIXA_StyleLine estiloLinea = lineStylesArr[LineStyle - 1];
 						IXA_ASSERT(LineStyle>0 && LineStyle<=lineStylesArrUse)
@@ -2408,9 +2409,9 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 						colorLineaActivo.g 		= estiloLinea.color.g;
 						colorLineaActivo.b 		= estiloLinea.color.b;
 						colorLineaActivo.a 		= estiloLinea.color.a;
-						//printf("   SWF ColorLinea activado: (%d, %d, %d, %d)\n", colorLineaActivo.r, colorLineaActivo.g, colorLineaActivo.b, colorLineaActivo.a);
+						//PRINTF_INFO("   SWF ColorLinea activado: (%d, %d, %d, %d)\n", colorLineaActivo.r, colorLineaActivo.g, colorLineaActivo.b, colorLineaActivo.a);
 					}
-					//printf("   Establecer LineStyle(%d), %d bits leidos\n", LineStyle, bitsEnLineas);
+					//PRINTF_INFO("   Establecer LineStyle(%d), %d bits leidos\n", LineStyle, bitsEnLineas);
 				}
 				if(StateMoveTo!=0){
 					STIXA_FigVertex newVertex;
@@ -2435,7 +2436,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 		} else {
 			IxaUI32 esRecto = __ixaReaderGetBitsUnsigned(rdr, 1);
 			if(esRecto==1){
-				//printf("   STRAIGHTEDGERECORD\n");
+				//PRINTF_INFO("   STRAIGHTEDGERECORD\n");
 				IxaUI32 NumBitsMenosDos= __ixaReaderGetBitsUnsigned(rdr, 4);
 				IxaUI32 esLineaGeneral = __ixaReaderGetBitsUnsigned(rdr, 1);
 				IxaUI32 esVertical		= 0;
@@ -2451,7 +2452,7 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 				if(esLineaGeneral==1 || (esLineaGeneral==0 && esVertical==1)){
 					DeltaY = __ixaReaderGetBitsSigned(rdr, NumBitsMenosDos + 2);
 				}
-				//printf("   Linea recta en delta +x(%d) +y(%d)\n", DeltaX, DeltaY);
+				//PRINTF_INFO("   Linea recta en delta +x(%d) +y(%d)\n", DeltaX, DeltaY);
 				//
 				if(!newFigureIsActive){
 					//esto nunca deberia ocurrir, pero es mejor estar seguros
@@ -2495,14 +2496,14 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 				posXTmp = nuevaPosX;
 				posYTmp = nuevaPosY;
 			} else {
-				//printf("   CURVEDEDGERECORD\n");
+				//PRINTF_INFO("   CURVEDEDGERECORD\n");
 				IxaUI32 NumBitsMenosDos= __ixaReaderGetBitsUnsigned(rdr, 4);
 				IxaSI32 ControlDeltaX	= __ixaReaderGetBitsSigned(rdr, NumBitsMenosDos+2);
 				IxaSI32 ControlDeltaY	= __ixaReaderGetBitsSigned(rdr, NumBitsMenosDos+2);
 				IxaSI32 AnchorDeltaX	= __ixaReaderGetBitsSigned(rdr, NumBitsMenosDos+2);
 				IxaSI32 AnchorDeltaY	= __ixaReaderGetBitsSigned(rdr, NumBitsMenosDos+2);
 				IxaSI32 curvaRefX, curvaRefY, nuevaPosX, nuevaPosY;
-				//printf("   Linea curva en delta +x(%d) +y(%d) con punto de control +x(%d) +y(%d)\n", AnchorDeltaX, AnchorDeltaY, ControlDeltaX, ControlDeltaY);
+				//PRINTF_INFO("   Linea curva en delta +x(%d) +y(%d) con punto de control +x(%d) +y(%d)\n", AnchorDeltaX, AnchorDeltaY, ControlDeltaX, ControlDeltaY);
 				//
 				if(!newFigureIsActive){
 					//esto nunca deberia ocurrir, pero es mejor estar seguros
@@ -2569,8 +2570,8 @@ void __ixaLoadSHAPE(STIXA_SwfFile* swf, STIXA_Reader* rdr, STIXA_Shape* dstShape
 		ixaShapeFigureAdd(dstShape, &newFigure); //no need to call ixaFigureFinalize(newFigure) when is added to a form.
 		newFigureIsActive = IXA_FALSE;
 	}
-	if(lineStylesArr!=NULL) IXA_FREE(lineStylesArr);
-	if(fillStylesArr!=NULL) IXA_FREE(fillStylesArr);
+	if(lineStylesArr!=NULL){ IXA_FREE(lineStylesArr); }
+	if(fillStylesArr!=NULL){ IXA_FREE(fillStylesArr); }
 }
 
 

@@ -50,7 +50,7 @@
 				2C82A70C18C28E3700DB9D37 /* ixaya-swf.h */,
 				2C82A70A18C28E1C00DB9D37 /* ixaya-swf.c */,
 			);
-			name = "ixaya-swf";
+			name = "lib-ixaya-swf";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -79,8 +79,8 @@
 			);
 			dependencies = (
 			);
-			name = "ixaya-swf";
-			productName = "ixaya-swf";
+			name = "ixaya-swf-osx";
+			productName = "ixaya-swf-osx";
 			productReference = 2C82A70218C28DE900DB9D37 /* libixaya-swf.a */;
 			productType = "com.apple.product-type.library.static";
 		};

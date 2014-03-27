@@ -1,31 +1,35 @@
-==========================
-ixaya-swf
-==========================
+
+#----------------------
+#ixaya-swf
+#----------------------
 
 Ixaya ("abrir los ojos" en Nahuatl) es una librería para la carga de archivos SWF de FLASH. Puede ser utilizada como base para el desarrollo de herramientas que consuman, modifiquen o produzcan archivos SWF.
 
-==========================
-Licencia
-==========================
+#----------------------
+#Licencia
+#----------------------
+
 LGPLv2.1, ver archivo LICENSE
 
-==========================
-Origen
-==========================
+#----------------------
+#Origen
+#----------------------
+
 Publicada el 01/mar/2014.
 
 Esta librería fue inicialmente desarrollada por Marcos Ortega a partir del documento "SWF FILE FORMAT SPECIFICATION" publicado por Adobe en: http://www.adobe.com 
 
-==========================
-Utilidad
-==========================
+#----------------------
+#Utilidad
+#----------------------
+
 Esta librería fue desarrollada con el objetivo de extraer datos desde archivos SWF.
 
 Ixaya-swf aun no extrae la totalidad de objetos dentro de un SWF. La versión actual extrae formas (gráficos vectoriales), recursos binarios (imagenes jpegs y otros), sonidos (mp3s y PCM), lossless (mapas de bits PNG) y movie clips.
 
-==========================
-Características de código
-==========================
+#----------------------
+#Características de código
+#----------------------
 
 Ixaya-swf fue concebida y desarrollada priorizando la facilidad para integrar en otros proyectos, caracterizada por:
 
@@ -44,16 +48,17 @@ Gracias a su estructura actual, Ixaya-swf puede ser integrada a la mayoría de p
 - Blackberry 10
 - etc..
 
-==========================
-Dependencia para descomprimir ZLIB
-==========================
+#----------------------
+#Dependencia para descomprimir ZLIB
+#----------------------
 
 Ixaya-swf depende de una función que realice la decompresion de contenido en formato ZLIB. El proyecto donde se vaya a integrara Ixaya-swf deberá proporcionar un callback para descomprimir ZLIB. Ver demos y las invocaciones al método "ixaSwfLoadFile".
 
-==========================
-Ejemplo de uso
-==========================
+#----------------------
+#Código de ejemplo
+#----------------------
 
+```c
 #include "ixaya-swf.h"
 
 ...
@@ -66,7 +71,12 @@ int main(...){
    STIXA_SwfFile swfFile;
    ixaSwfFileInit(&swfFile);
    if(ixaSwfLoadFile(&swfFile, "/swfPath.swf", uncompressSwfZlib)){
-      /*explore the STIXA_SwfFile structure: movie clips, sounds, shapes, lossless, bits, etc...*/
+      /*
+        Explore the STIXA_SwfFile structure:
+        movie clips, sounds, shapes, lossless, bits, etc...
+      */
    } 
    ixaSwfFileFinalize(&swfFile);
 }
+
+```
